@@ -75,7 +75,7 @@ class StatusAddon extends Addon
      */
     public function render_plugins()
     {
-        $this->mvc->call( 'StatusController@render', '/plugins.php' );
+        $this->mvc->call( 'StatusController@render', '/plugins.php', $this->main );
     }
     /**
      * Renders system status page.
@@ -85,6 +85,6 @@ class StatusAddon extends Addon
      */
     public function render_themes()
     {
-        $this->mvc->call( 'StatusController@render', '/themes.php' );
+        $this->mvc->call( 'StatusController@render', '/themes.php', $this->main );
     }
 }

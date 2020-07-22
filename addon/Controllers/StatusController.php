@@ -2,6 +2,9 @@
 
 namespace WPMVC\Addons\Status\Controllers;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use TenQuality\WP\File;
 use WPMVC\Request;
 use WPMVC\MVC\Controller;
 use WPMVC\Addons\Status\Abstracts\StatusData;
@@ -27,9 +30,10 @@ class StatusController extends Controller
      * 
      * @see StatusAddon::add_endpoints()
      * 
-     * @param string $parent Menu parent.
+     * @param string        $parent Menu parent.
+     * @param \WPMVC\Bridge $main
      */
-    public function render( $parent )
+    public function render( $parent, $main )
     {
         // Page tabs
         $tabs = apply_filters( 'wpmvc_addon_status_tabs', [
@@ -41,22 +45,23 @@ class StatusController extends Controller
         if ( !array_key_exists( $tab, $tabs ) )
             $tab = 'status';
         // Rendering and enqueue
+        $base_url = add_query_arg( 'page', Request::input( 'page' ), admin_url( $parent ) );
         do_action( 'wpmvc_addon_status_enqueue' );
         do_action( 'wpmvc_addon_status_' . $tab . '_enqueue' );
         $this->view->show( 'addon-status.header', [
             'tabs' => &$tabs,
             'tab' => &$tab,
-            'url' => add_query_arg( 'page', Request::input( 'page' ), admin_url( $parent ) ),
+            'url' => $base_url,
         ] );
         switch ( $tab ) {
             case 'status':
                 $this->render_status();
                 break;
             case 'logs':
-                $this->render_logs();
+                $this->render_logs( $main, add_query_arg( 'tab', 'logs', $base_url ) );
                 break;
             default:
-                do_action( 'wpmvc_addon_status_tab_' . $tab );
+                do_action( 'wpmvc_addon_status_tab_' . $tab, $main, add_query_arg( 'tab', $tab, $base_url ) );
                 break;
         }
         $this->view->show( 'addon-status.footer', [
@@ -130,9 +135,47 @@ class StatusController extends Controller
     /**
      * Renders logs tab.
      * @since 1.0.0
+     * 
+     * @param \WPMVC\Bridge $main
+     * @param string        $base_url
      */
-    private function render_logs()
+    private function render_logs( $main, $base_url )
     {
-
+        $logs = [];
+        if ( File::auth()->is_dir( $main->config->get( 'paths.log' ) ) ) {
+            $dir = new RecursiveDirectoryIterator( $main->config->get( 'paths.log' ), RecursiveDirectoryIterator::SKIP_DOTS );
+            foreach ( new RecursiveIteratorIterator( $dir, RecursiveIteratorIterator::SELF_FIRST ) as $filename => $item ) {
+                $logs[$item->getCTime()] = [
+                    'filename' => $filename,
+                    'name' => $item->getBasename(),
+                    'type' => 'wpmvc',
+                    'object' => $item,
+                ];
+            }
+        }
+        $logs = apply_filters( 'wpmvc_addon_status_logs', $logs );
+        // Process deletion
+        $delete = Request::input( 'delete' );
+        if ( $delete && array_key_exists( $delete, $logs ) ) {
+            unlink( $logs[$delete]['filename'] );
+            unset( $logs[$delete] );
+        }
+        // Process rendering
+        $view = Request::input( 'view' );
+        if ( $view && array_key_exists( $view, $logs ) && array_key_exists( 'filename', $logs[$view] ) ) {
+            $this->view->show( 'addon-status.tab-logs-view', [
+                'log' => $logs[$view],
+                'content' => File::auth()->read( $logs[$view]['filename'] ),
+                'url' => $base_url,
+                'delete_url' => add_query_arg( 'delete', $view, $base_url ),
+            ] );
+        } else {
+            foreach ( $logs as $key => $log ) {
+                $logs[$key]['url'] = add_query_arg( 'view', $key, $base_url );
+            }
+            $this->view->show( 'addon-status.tab-logs', [
+                'logs' => &$logs,
+            ] );
+        }
     }
 }
