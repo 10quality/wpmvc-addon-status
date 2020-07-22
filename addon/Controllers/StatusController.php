@@ -99,6 +99,28 @@ class StatusController extends Controller
                 && !empty( $item['title'] )
                 && !empty( $item['message'] );
         } );
+        // Replace status codes
+        $data = array_map( function( $item ) {
+            if ( array_key_exists( 'status', $item ) ) {
+                switch ( $item['status'] ) {
+                    case 1:
+                        $item['status'] = 'success';
+                        break;
+                    case 1:
+                        $item['status'] = 'important';
+                        break;
+                    case 2:
+                        $item['status'] = 'danger';
+                        break;
+                    default:
+                        $item['status'] = 'normal';
+                        break;
+                }
+            } else {
+                $item['status'] = 'normal';
+            }
+            return $item;
+        }, $data );
         // Render
         $this->view->show( 'addon-status.tab-status', [
             'sections' => &$sections,
