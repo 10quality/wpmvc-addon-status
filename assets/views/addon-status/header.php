@@ -42,6 +42,32 @@
 .section .data-item .item-message {
     margin-left: 20px;
 }
+.section .data-item.success .item-message {
+    color: #4CAF50;
+    font-weight: 500;
+}
+.section .data-item.danger .item-message {
+    color: #FF5722;
+    font-weight: 500;
+}
+.section .data-item.important .item-message {
+    color: #3F51B5;
+    font-weight: 500;
+}
+pre {
+    background-color: #E0E0E0;
+    padding: 10px;
+    overflow: auto;
+    border-radius: 5px;
+    box-shadow: inset 0 0 3px 1px #b9b9b9;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    font-size: small;
+    margin: 0;
+}
 @media (max-width: 650px) {
     .section .data-item {
         flex-direction: column;
