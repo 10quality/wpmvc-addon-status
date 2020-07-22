@@ -37,12 +37,11 @@ abstract class StatusData
      * 
      * @return mixed
      */
-    public function &__get( $property )
+    public function __get( $property )
     {
-        $value = null;
         return array_key_exists( $property, $this->attributes )
             ? $this->attributes[$property]
-            : $value;
+            : null;
     }
     /**
      * Setter.
