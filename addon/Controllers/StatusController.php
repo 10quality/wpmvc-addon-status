@@ -5,6 +5,7 @@ namespace WPMVC\Addons\Status\Controllers;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use TenQuality\WP\File;
+use WPMVC\Cache;
 use WPMVC\Request;
 use WPMVC\MVC\Controller;
 use WPMVC\Addons\Status\Abstracts\StatusData;
@@ -20,7 +21,7 @@ use WPMVC\Addons\Status\Data\DbCharset;
  * @author 10 Quality Studio <info@10quality.com>
  * @package wpmvc-addon-status
  * @license MIT
- * @version 1.0.0
+ * @version 1.0.1
  */
 class StatusController extends Controller
 {
@@ -39,6 +40,7 @@ class StatusController extends Controller
         $tabs = apply_filters( 'wpmvc_addon_status_tabs', [
             'status' => __( 'Status', 'wpmvc-addon-status' ),
             'logs' => __( 'Logs', 'wpmvc-addon-status' ),
+            'cache' => __( 'Cache' ),
         ] );
         // Current tab
         $tab = Request::input( 'tab', apply_filters( 'wpmvc_addon_status_tab', 'status' ) );
@@ -59,6 +61,9 @@ class StatusController extends Controller
                 break;
             case 'logs':
                 $this->render_logs( $main, add_query_arg( 'tab', 'logs', $base_url ) );
+                break;
+            case 'cache':
+                $this->render_cache( add_query_arg( 'tab', 'cache', $base_url ) );
                 break;
             default:
                 do_action( 'wpmvc_addon_status_tab_' . $tab, $main, add_query_arg( 'tab', $tab, $base_url ) );
@@ -177,5 +182,25 @@ class StatusController extends Controller
                 'logs' => &$logs,
             ] );
         }
+    }
+    /**
+     * Renders cache tab.
+     * @since 1.0.1
+     *
+     * @param string $base_url
+     */
+    private function render_cache( $base_url )
+    {
+        $flushed = false;
+        if ( Request::input( 'flush', false ) == 1 ) {
+            Cache::flush();
+            $flushed = true;
+            do_action( 'wpmvc_addon_cache_flushed' );
+        }
+        // Process rendering
+        $this->view->show( 'addon-status.tab-cache', [
+            'flushed' => $flushed,
+            'flush_url' => add_query_arg( 'flush', 1, $base_url ),
+        ] );
     }
 }
