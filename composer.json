@@ -8,14 +8,19 @@
         "10quality/wpmvc-core": ">=3.1.0",
         "10quality/wpmvc-addon": "1.0.*"
     },
+    "require-dev": {
+        "10quality/wpmvc-addon-testsuite": "dev-main",
+        "phpunit/phpunit": "9.*"
+    },
     "autoload": {
         "psr-4": {
             "WPMVC\\Addons\\Status\\": "addon/"
         }
     },
-    "minimum-stability": "dev",
-    "require-dev": {
-        "10quality/wpmvc-addon-testsuite": "dev-main",
-        "phpunit/phpunit": "9.*"
-    }
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
+    },
+    "minimum-stability": "dev"
 }

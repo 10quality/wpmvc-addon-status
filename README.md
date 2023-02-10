@@ -1,6 +1,7 @@
 # Status Addon (for Wordpress MVC)
 
 [![Latest Stable Version](https://poser.pugx.org/10quality/wpmvc-addon-status/v/stable)](https://packagist.org/packages/10quality/wpmvc-addon-status)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/10quality/wpmvc-addon-status/test.yml)
 [![Total Downloads](https://poser.pugx.org/10quality/wpmvc-addon-status/downloads)](https://packagist.org/packages/10quality/wpmvc-addon-status)
 [![License](https://poser.pugx.org/10quality/wpmvc-addon-status/license)](https://packagist.org/packages/10quality/wpmvc-addon-status)
 
