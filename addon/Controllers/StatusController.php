@@ -21,7 +21,7 @@ use WPMVC\Addons\Status\Data\DbCharset;
  * @author 10 Quality Studio <info@10quality.com>
  * @package wpmvc-addon-status
  * @license MIT
- * @version 1.0.1
+ * @version 1.0.3
  */
 class StatusController extends Controller
 {
@@ -146,6 +146,16 @@ class StatusController extends Controller
      */
     private function render_logs( $main, $base_url )
     {
+        // Delete all?
+        $deleted_all = false;
+        if ( Request::input( 'delete-all' ) ) {
+            foreach ( glob( $main->config->get( 'paths.log' ) . '/*.txt' ) as $filename ) {
+                unlink( $filename );
+            }
+            $deleted_all = true;
+            do_action( 'wpmvc_addon_logs_deleted' );
+        } 
+        // Read
         $logs = [];
         if ( File::auth()->is_dir( $main->config->get( 'paths.log' ) ) ) {
             $dir = new RecursiveDirectoryIterator( $main->config->get( 'paths.log' ), RecursiveDirectoryIterator::SKIP_DOTS );
@@ -180,6 +190,8 @@ class StatusController extends Controller
             }
             $this->view->show( 'addon-status.tab-logs', [
                 'logs' => &$logs,
+                'deleted_all' => $deleted_all,
+                'delete_all_url' => add_query_arg( 'delete-all', 1, $base_url ),
             ] );
         }
     }

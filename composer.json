@@ -17,6 +17,11 @@
             "WPMVC\\Addons\\Status\\": "addon/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "WPMVC\\Addons\\Status\\PHPUnit\\": "tests/framework/"
+        }
+    },
     "scripts": {
         "test": [
             "phpunit"
