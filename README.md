@@ -14,6 +14,7 @@ Features:
 * System status (WP, PHP and DB versions).
 * Easy JSON export.
 * WordPress MVC log file viewer.
+* Flush WordPress MVC cache.
 
 ## Install and Configuration
 
